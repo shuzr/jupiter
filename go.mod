@@ -38,6 +38,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.6.0
 	github.com/robfig/cron/v3 v3.0.1
+	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	github.com/smallnest/weighted v0.0.0-20200122032019-adf21c9b8bd1
 	github.com/smartystreets/assertions v0.0.0-20190401211740-f487f9de1cd3 // indirect
@@ -61,6 +62,7 @@ require (
 	google.golang.org/genproto v0.0.0-20191216164720-4f79533eabd1
 	google.golang.org/grpc v1.26.0
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
+	github.com/satori/go.uuid v1.2.0
 )
 
 replace github.com/douyu/jupiter/pkg/registry/consul => E:/workspace/Code/Go/works/jupiter/pkg/registry/consul

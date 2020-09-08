@@ -2,10 +2,8 @@ package consul
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"strconv"
-	"strings"
+	"net"
 	"time"
 
 	"github.com/douyu/jupiter/pkg/client/consul"
@@ -14,12 +12,14 @@ import (
 	"github.com/douyu/jupiter/pkg/server"
 	"github.com/douyu/jupiter/pkg/xlog"
 	"github.com/hashicorp/consul/api"
+	uuid "github.com/satori/go.uuid"
 )
 
 type consulRegistry struct {
-	client *consul.Client
+	id string
 	*Config
-	cancel context.CancelFunc
+	client *consul.Client
+	ctx    context.Context
 }
 
 func newConsulRegistry(config *Config) *consulRegistry {
@@ -31,17 +31,20 @@ func newConsulRegistry(config *Config) *consulRegistry {
 }
 
 func (reg *consulRegistry) RegisterService(ctx context.Context, info *server.ServiceInfo) error {
-	if reg.client == nil {
-		return errors.New("nil client")
+
+	addr, err := net.ResolveTCPAddr("", info.Address)
+	if err != nil {
+		return err
 	}
-	addrs := strings.Split(info.Address, ":")
+	reg.ctx = ctx
 	// 服务注册配置
 	registration := new(api.AgentServiceRegistration)
 	registration.Name = info.Name
-	registration.Address = addrs[0]
-	port, _ := strconv.Atoi(addrs[1])
-	registration.Port = port
-	registration.ID = info.AppID
+	registration.Address = addr.IP.String()
+	registration.Port = addr.Port
+	uuid, _ := uuid.NewV4()
+	reg.id = info.Name + "." + uuid.String()
+	registration.ID = reg.id
 
 	// 健康检查配置
 	check := new(api.AgentServiceCheck)
@@ -51,17 +54,10 @@ func (reg *consulRegistry) RegisterService(ctx context.Context, info *server.Ser
 	check.DeregisterCriticalServiceAfter = "30s"
 	registration.Check = check
 
-	err := reg.client.Agent().ServiceRegister(registration)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return err
+	return reg.client.Agent().ServiceRegister(registration)
 }
 
 func (reg *consulRegistry) UnregisterService(ctx context.Context, info *server.ServiceInfo) error {
-	if reg.client != nil {
-		return errors.New("nil client")
-	}
 	return reg.client.Agent().ServiceDeregister(info.AppID)
 }
 
@@ -74,7 +70,6 @@ func (reg *consulRegistry) WatchServices(ctx context.Context, name string, id st
 }
 
 func (reg *consulRegistry) Close() error {
-	reg.cancel()
 	return nil
 }
 
