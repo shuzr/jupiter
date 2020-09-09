@@ -66,5 +66,4 @@ require (
 )
 
 replace github.com/douyu/jupiter/pkg/registry/consul => E:/workspace/Code/Go/works/jupiter/pkg/registry/consul
-
 replace github.com/douyu/jupiter/pkg/client/consul => E:/workspace/Code/Go/works/jupiter/pkg/client/consul
