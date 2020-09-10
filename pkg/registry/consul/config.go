@@ -7,7 +7,6 @@ import (
 	"github.com/douyu/jupiter/pkg/conf"
 	"github.com/douyu/jupiter/pkg/ecode"
 	"github.com/douyu/jupiter/pkg/registry"
-
 	"github.com/douyu/jupiter/pkg/xlog"
 )
 

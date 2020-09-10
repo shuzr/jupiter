@@ -8,7 +8,6 @@ import (
 
 	"github.com/douyu/jupiter/pkg/client/consul"
 	"github.com/douyu/jupiter/pkg/constant"
-	"github.com/douyu/jupiter/pkg/ecode"
 	"github.com/douyu/jupiter/pkg/registry"
 	"github.com/douyu/jupiter/pkg/server"
 	"github.com/douyu/jupiter/pkg/xlog"
@@ -26,7 +25,7 @@ func newConsulRegistry(config *Config) *consulRegistry {
 	if config.logger == nil {
 		config.logger = xlog.JupiterLogger
 	}
-	config.logger = config.logger.With(xlog.FieldMod(ecode.ModRegistryConsul), xlog.FieldAddrAny(config.Config.Endpoints))
+	config.logger = config.logger.With(xlog.FieldMod( /*ecode.ModRegistryConsul*/ "registry.consul"), xlog.FieldAddrAny(config.Config.Endpoints))
 	return &consulRegistry{client: config.Config.Build(), Config: config}
 }
 
@@ -41,7 +40,7 @@ func (reg *consulRegistry) RegisterService(ctx context.Context, info *server.Ser
 	registration.Name = info.Name
 	registration.Address = addr.IP.String()
 	registration.Port = addr.Port
-	uuid, _ := uuid.NewV4()
+	uuid := uuid.NewV4()
 	reg.id = info.Name + "." + uuid.String()
 	registration.ID = reg.id
 

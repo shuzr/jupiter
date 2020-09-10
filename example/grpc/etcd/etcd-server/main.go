@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+
 	"github.com/douyu/jupiter"
 	compound_registry "github.com/douyu/jupiter/pkg/registry/compound"
 	etcdv3_registry "github.com/douyu/jupiter/pkg/registry/etcdv3"
@@ -59,6 +60,7 @@ func (eng *Engine) serveGRPC() error {
 	return eng.Serve(server)
 }
 
+// Greeter ...
 type Greeter struct {
 	server *xgrpc.Server
 }
