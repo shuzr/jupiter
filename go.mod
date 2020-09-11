@@ -62,8 +62,6 @@ require (
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
 )
 
-replace github.com/douyu/jupiter/pkg/ecode => E:/workspace/Code/Go/works/jupiter/pkg/ecode
-
-// replace github.com/douyu/jupiter/pkg/registry/consul => E:/workspace/Code/Go/works/jupiter/pkg/registry/consul
-// replace github.com/douyu/jupiter/pkg/client/consul => E:/workspace/Code/Go/works/jupiter/pkg/client/consul
-// replace github.com/douyu/jupiter/pkg/ecode => E:/workspace/Code/Go/works/jupiter/pkg/ecode
+replace github.com/douyu/jupiter/pkg/ecode => github.com/shuzr/jupiter/pkg/ecode
+replace github.com/douyu/jupiter/pkg/client/consul => github.com/shuzr/jupiter/pkg/client/consul
+replace github.com/douyu/jupiter/pkg/registry/consul => github.com/shuzr/jupiter/pkg/registry/consul
