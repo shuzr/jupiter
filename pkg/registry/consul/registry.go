@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"time"
 
 	"github.com/douyu/jupiter/pkg/client/consul"
 	"github.com/douyu/jupiter/pkg/constant"
@@ -96,32 +95,4 @@ func makeService(as *api.AgentService) *server.ServiceInfo {
 		Deployment: "default",
 		Group:      "",
 	}
-}
-
-// RunConsulRegistry ...
-func RunConsulRegistry() {
-	conf := consul.DefaultConfig()
-	conf.Endpoints = []string{"192.168.88.206:8500"}
-	registry := newConsulRegistry(&Config{
-		Config:      conf,
-		ReadTimeout: time.Second * 10,
-		Prefix:      "jupiter",
-		logger:      xlog.DefaultLogger,
-	})
-
-	registry.RegisterService(context.Background(), &server.ServiceInfo{
-		Name:     "go.service.consul1.test",
-		AppID:    "",
-		Scheme:   "http",
-		Address:  "192.168.88.57:37219",
-		Weight:   0,
-		Enable:   true,
-		Healthy:  true,
-		Metadata: map[string]string{},
-		Region:   "default",
-		Zone:     "default",
-		// Kind:       constant.ServiceProvider,
-		Deployment: "default",
-		Group:      "",
-	})
 }
