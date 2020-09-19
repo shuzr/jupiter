@@ -10,8 +10,8 @@ import (
 	"github.com/douyu/jupiter/pkg/registry"
 	"github.com/douyu/jupiter/pkg/server"
 	"github.com/douyu/jupiter/pkg/xlog"
+	uuid "github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
-	uuid "github.com/satori/go.uuid"
 )
 
 type consulRegistry struct {
@@ -39,7 +39,7 @@ func (reg *consulRegistry) RegisterService(ctx context.Context, info *server.Ser
 	registration.Name = info.Name
 	registration.Address = addr.IP.String()
 	registration.Port = addr.Port
-	uuid := uuid.NewV4()
+	uuid := uuid.New()
 	reg.id = info.Name + "." + uuid.String()
 	registration.ID = reg.id
 
