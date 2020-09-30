@@ -5,16 +5,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/douyu/jupiter/pkg/client/consul"
 	"github.com/douyu/jupiter/pkg/server"
 	"github.com/douyu/jupiter/pkg/xlog"
 )
 
 func TestRunConsulRegistry(t *testing.T) {
-	conf := consul.DefaultConfig()
+	conf := DefaultConfig()
 	conf.Endpoints = []string{"192.168.88.206:8500"}
 	registry := newConsulRegistry(&Config{
-		Config:      conf,
 		ReadTimeout: time.Second * 10,
 		Prefix:      "jupiter",
 		logger:      xlog.DefaultLogger,

@@ -5,27 +5,26 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/douyu/jupiter/pkg/client/consul"
 	"github.com/douyu/jupiter/pkg/constant"
 	"github.com/douyu/jupiter/pkg/registry"
 	"github.com/douyu/jupiter/pkg/server"
-	"github.com/douyu/jupiter/pkg/xlog"
 	uuid "github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
 )
 
 type consulRegistry struct {
-	id string
 	*Config
-	client *consul.Client
+	client *api.Client
 }
 
 func newConsulRegistry(config *Config) *consulRegistry {
-	if config.logger == nil {
-		config.logger = xlog.JupiterLogger
+	conf := api.DefaultConfig()
+	conf.Address = config.Endpoints[0]
+	c, err := api.NewClient(conf)
+	if err != nil {
+		config.logger.Panic(err.Error())
 	}
-	config.logger = config.logger.With(xlog.FieldMod( /*ecode.ModRegistryConsul*/ "registry.consul"), xlog.FieldAddrAny(config.Config.Endpoints))
-	return &consulRegistry{client: config.Config.Build(), Config: config}
+	return &consulRegistry{client: c, Config: config}
 }
 
 func (reg *consulRegistry) RegisterService(ctx context.Context, info *server.ServiceInfo) error {
@@ -39,23 +38,28 @@ func (reg *consulRegistry) RegisterService(ctx context.Context, info *server.Ser
 	registration.Name = info.Name
 	registration.Address = addr.IP.String()
 	registration.Port = addr.Port
-	uuid := uuid.New()
-	reg.id = info.Name + "." + uuid.String()
-	registration.ID = reg.id
+	uuid := uuid.New().String()
+	registration.ID = info.Name + "." + uuid
 
-	// 健康检查配置
 	check := new(api.AgentServiceCheck)
-	check.HTTP = fmt.Sprintf("http://%s", info.Address)
-	check.Timeout = "3s"
+	// 健康检查配置 TTL
+	// check.TTL = "10s"
+	// check.Notes = "Web app does a curl internally every 10 seconds"
+	// registration.Check = check
+
+	// 健康检查配置 HTTP
+	check.HTTP = fmt.Sprintf("http://%s/health", info.Address)
+	check.Timeout = "2s"
 	check.Interval = "5s"
-	check.DeregisterCriticalServiceAfter = "30s"
+	check.DeregisterCriticalServiceAfter = "15s"
 	registration.Check = check
 
 	return reg.client.Agent().ServiceRegister(registration)
 }
 
 func (reg *consulRegistry) UnregisterService(ctx context.Context, info *server.ServiceInfo) error {
-	return reg.client.Agent().ServiceDeregister(reg.id)
+	fmt.Println("UnregisterService---------------", ctx.Value("serviceid"))
+	return reg.client.Agent().ServiceDeregister(info.AppID)
 }
 
 func (reg *consulRegistry) ListServices(ctx context.Context, name string, scheme string) (services []*server.ServiceInfo, err error) {
@@ -76,7 +80,7 @@ func (reg *consulRegistry) WatchServices(ctx context.Context, name string, schem
 }
 
 func (reg *consulRegistry) Close() error {
-	return reg.client.Agent().ServiceDeregister(reg.id)
+	return nil
 }
 
 func makeService(as *api.AgentService) *server.ServiceInfo {

@@ -26,7 +26,6 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway v1.9.6 // indirect
-	github.com/hashicorp/consul/api v1.4.0
 	github.com/jinzhu/gorm v1.9.12
 	github.com/json-iterator/go v1.1.10
 	github.com/labstack/echo/v4 v4.1.16
@@ -38,7 +37,6 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.6.0
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	github.com/smallnest/weighted v0.0.0-20200122032019-adf21c9b8bd1
 	github.com/smartystreets/assertions v0.0.0-20190401211740-f487f9de1cd3 // indirect
@@ -65,5 +63,4 @@ require (
 )
 
 replace github.com/douyu/jupiter/pkg/ecode => E:\workspace\Code\Go\works\jupiter\pkg\ecode
-replace github.com/douyu/jupiter/pkg/client/consul => E:\workspace\Code\Go\works\jupiter\pkg\client\consul
 replace github.com/douyu/jupiter/pkg/registry/consul => E:\workspace\Code\Go\works\jupiter\pkg\registry\consul

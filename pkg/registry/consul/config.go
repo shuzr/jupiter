@@ -3,7 +3,6 @@ package consul
 import (
 	"time"
 
-	"github.com/douyu/jupiter/pkg/client/consul"
 	"github.com/douyu/jupiter/pkg/conf"
 	"github.com/douyu/jupiter/pkg/ecode"
 	"github.com/douyu/jupiter/pkg/registry"
@@ -23,16 +22,15 @@ func RawConfig(key string) *Config {
 		xlog.Panic("unmarshal key", xlog.FieldMod("registry.consul"), xlog.FieldErrKind(ecode.ErrKindUnmarshalConfigErr), xlog.FieldErr(err), xlog.String("key", key), xlog.Any("config", config))
 	}
 	// 解析嵌套配置
-	if err := conf.UnmarshalKey(key, &config.Config); err != nil {
-		xlog.Panic("unmarshal key", xlog.FieldMod("registry.consul"), xlog.FieldErrKind(ecode.ErrKindUnmarshalConfigErr), xlog.FieldErr(err), xlog.String("key", key), xlog.Any("config", config))
-	}
+	// if err := conf.UnmarshalKey(key, &config); err != nil {
+	// 	xlog.Panic("unmarshal key", xlog.FieldMod("registry.consul"), xlog.FieldErrKind(ecode.ErrKindUnmarshalConfigErr), xlog.FieldErr(err), xlog.String("key", key), xlog.Any("config", config))
+	// }
 	return config
 }
 
 // DefaultConfig ...
 func DefaultConfig() *Config {
 	return &Config{
-		Config:      consul.DefaultConfig(),
 		ReadTimeout: time.Second * 3,
 		Prefix:      "jupiter",
 		logger:      xlog.JupiterLogger,
@@ -41,7 +39,7 @@ func DefaultConfig() *Config {
 
 // Config ...
 type Config struct {
-	*consul.Config
+	Endpoints   []string `json:"endpoints"`
 	ReadTimeout time.Duration
 	ConfigKey   string
 	Prefix      string
@@ -49,9 +47,10 @@ type Config struct {
 }
 
 // Build ...
-func (config Config) Build() registry.Registry {
-	if config.ConfigKey != "" {
-		config.Config = consul.RawConfig(config.ConfigKey)
+func (config *Config) Build() registry.Registry {
+	if config.logger == nil {
+		config.logger = xlog.JupiterLogger
 	}
-	return newConsulRegistry(&config)
+	config.logger = config.logger.With(xlog.FieldMod( /*ecode.ModRegistryConsul*/ "registry.consul"), xlog.FieldAddrAny(config.Endpoints))
+	return newConsulRegistry(config)
 }
