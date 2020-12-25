@@ -58,7 +58,6 @@ func (reg *consulRegistry) RegisterService(ctx context.Context, info *server.Ser
 }
 
 func (reg *consulRegistry) UnregisterService(ctx context.Context, info *server.ServiceInfo) error {
-	fmt.Println("UnregisterService---------------", ctx.Value("serviceid"))
 	return reg.client.Agent().ServiceDeregister(info.AppID)
 }
 
